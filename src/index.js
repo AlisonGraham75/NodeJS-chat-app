@@ -43,17 +43,22 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sendMessage', (message, callback) => {
+        const user = getUser(socket.id)
+                
         const filter = new Filter()
         if (filter.isProfane(message)){
             return callback('Profanity is not allowed!')
         }
-        //emits to all connected clients
-        io.emit('message', generateMessage(message))
+     
+
+        //emits to all connected clients in the same room
+        io.to(user.room).emit('message', generateMessage(message))
         callback()
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', generateLocationMessage('https://google.com/maps?q=' + coords.latitude + ',' +  coords.longitude))
+        const user = getUser(socket.id)
+        io.to.toString(user.room).emit('locationMessage', generateLocationMessage('https://google.com/maps?q=' + coords.latitude + ',' +  coords.longitude))
         callback()
     })
 
