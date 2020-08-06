@@ -33,10 +33,10 @@ io.on('connection', (socket) => {
         socket.join(user.room)
 
         //emits to the current client
-        socket.emit('message', generateMessage('Welcome!'))
+        socket.emit('message', generateMessage('Admin','Welcome!'))
 
         //send to every client in room except the current
-        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.username} has joined`))
+        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined`))
 
         callback()
 
@@ -52,13 +52,13 @@ io.on('connection', (socket) => {
      
 
         //emits to all connected clients in the same room
-        io.to(user.room).emit('message', generateMessage(message))
+        io.to(user.room).emit('message', generateMessage(user.username, message))
         callback()
     })
 
     socket.on('sendLocation', (coords, callback) => {
         const user = getUser(socket.id)
-        io.to.toString(user.room).emit('locationMessage', generateLocationMessage('https://google.com/maps?q=' + coords.latitude + ',' +  coords.longitude))
+        io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
